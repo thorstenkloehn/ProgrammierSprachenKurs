@@ -1,0 +1,5 @@
+[book]
+authors = ["Thorsten Klöhn"]
+language = "en"
+src = "src"
+title = "Programmiersprachen Lernen"
