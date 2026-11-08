@@ -15,32 +15,15 @@ Ein Buch über das Erlernen von Programmiersprachen, erstellt mit [mdBook](https
 
 ## Arbeitsablauf: vom Rohtext zum Kapitel
 
-Jeder Artikel entsteht zuerst als Rohfassung und wird dann in das Buch übernommen.
+Jeder Artikel entsteht zuerst als Rohfassung in `RAW/`, z. B. `RAW/Vorwort.md`. Mit Unterstützung von KI werden Rechtschreibung, Grammatik und Zeichensetzung korrigiert; Stil, Inhalt und Ton bleiben unverändert. Die korrigierte Fassung landet unter demselben Dateinamen in `src/`, ergänzt um einen Transparenzhinweis gemäß Art. 50 EU AI Act, und wird in `src/SUMMARY.md` eingetragen.
 
-1. **Rohfassung schreiben** – Der Text wird als Markdown-Datei in `RAW/` abgelegt, z. B. `RAW/Vorwort.md`.
-2. **Korrektur** – Rechtschreibung, Grammatik und Zeichensetzung werden geprüft und verbessert (mit Unterstützung von KI). Stil, Inhalt und Ton des Autors bleiben unverändert. Die Korrekturen werden auch in der Datei in `RAW/` übernommen, jedoch ohne Transparenzhinweis.
-3. **Übernahme nach `src/`** – Die korrigierte Fassung wird unter demselben Dateinamen in `src/` gespeichert, z. B. `src/Vorwort.md`.
-4. **Transparenzhinweis einfügen** – Direkt unter der Kapitelüberschrift (`# …`) und als letzte Zeile der Datei steht jeweils dieser Hinweis:
-
-   ```markdown
-   *Dieser Text wurde von einem Menschen verfasst. Rechtschreibung und Grammatik wurden mit Unterstützung von Künstlicher Intelligenz geprüft und korrigiert (Transparenzhinweis gemäß Art. 50 EU AI Act).*
-   ```
-
-5. **Inhaltsverzeichnis ergänzen** – Das Kapitel wird in `src/SUMMARY.md` eingetragen:
-
-   ```markdown
-   [Vorwort](Vorwort.md)
-   ```
-
-6. **Buch bauen und prüfen** – siehe unten.
-
-Die Rohfassungen bleiben nach der Übernahme dauerhaft in `RAW/` erhalten. Bei einer erneuten Übernahme wird die gesamte aktuelle Rohfassung gelesen und sprachlich korrigiert. Die Fassung in `src/` wird daraus neu erstellt; Ergänzungen, Änderungen und Streichungen werden übernommen. Die beiden Transparenzhinweise bleiben in `src/` erhalten, und das Inhaltsverzeichnis wird bei Bedarf angepasst, ohne Einträge zu duplizieren.
+Die verbindlichen Regeln für diesen Ablauf stehen ausschließlich in [AGENTS.md](AGENTS.md).
 
 ## Prompts für die Arbeit am Buch
 
 Ein Prompt ist ein Arbeitsauftrag an den KI-Assistenten. Die folgenden Texte kannst du im Chat verwenden, während dieses Projekt geöffnet ist. Sie sind keine Terminalbefehle. Ersetze die Beispieldatei `RAW/Vorwort.md` durch die gewünschte Rohfassung.
 
-Die zentralen Regeln stehen in [AGENTS.md](AGENTS.md). Für einzelne Textabschnitte gelten zusätzlich die Regeln in [RAW/AGENTS.md](RAW/AGENTS.md).
+Alle Regeln stehen in [AGENTS.md](AGENTS.md).
 
 ### Eine Rohfassung ins Buch übernehmen
 
