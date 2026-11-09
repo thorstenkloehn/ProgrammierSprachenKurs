@@ -1,1 +1,1 @@
-Suche im Web zu den Themen der einzelnen Artikel im Ordner /RAW. Extrahiere alles, was du findest, und speichere die Inhalte im Ordner Rohmaterial in Markdown.
+Nutze den Skill `rohmaterial-recherche` (`.agents/skills/rohmaterial-recherche/SKILL.md` bzw. `.claude/skills/rohmaterial-recherche/SKILL.md`) und führe die Rohmaterial-Recherche für die Artikel in `RAW/` (außer `Vorwort.md`) inklusive `mdbook build` im Ordner `Rohmaterial/` aus.
