@@ -22,6 +22,7 @@ HINWEIS = ("*Prototyp: Dieses Kapitel wurde mit Unterstützung von Künstlicher 
 # Reihenfolge und Zuordnung der Themenkapitel
 KAPITEL = [
     ("Dokument_erstellen_software.md", "Dokumente"),
+    ("Markdown.md", "Markdown"),
     ("CLI_Werkzeuge.md", "CLI-Werkzeuge"),
     ("Desktop.md", "Desktop-Anwendungen"),
     ("Webframework.md", "Webframeworks"),
@@ -202,7 +203,7 @@ grundprinzipien, ausblick, quellen, summary_kapitel = [], [], [], []
 for name, kurz in KAPITEL:
     title, raw_body = raw_parts(name)
     sections = roh_sections(name)
-    teile = ["## Kernaussagen des Autors", raw_body]
+    teile = ["## Kernaussagen des Autors", raw_body or "*Die Rohfassung enthält bisher nur die Überschrift.*"]
     lehr = lehrtext(name)
     if name == "Werkzeuge.md" and lehr:
         lehr.setdefault("Vergleich auf einen Blick", werkzeugtabelle(sections))
@@ -262,7 +263,7 @@ lines = ["# Summary", "", "[Vorwort](Vorwort.md)", "",
 def eintrag(name):
     t = dict((n, t) for t, n in summary_kapitel)[name]
     return f"- [{t}]({name})"
-lines += [eintrag("Dokument_erstellen_software.md"), "", "# Programmieren für 20 Jahre", "",
+lines += [eintrag("Dokument_erstellen_software.md"), eintrag("Markdown.md"), "", "# Programmieren für 20 Jahre", "",
           eintrag("CLI_Werkzeuge.md"), eintrag("Desktop.md"), eintrag("Webframework.md"), "",
           "# Arbeiten mit Sprachmodellen", "", eintrag("Sprachmodel.md"), eintrag("KI_AGENT.md"), "",
           "# Lernplattformen und Code-Ausführung", "", eintrag("Fertige_Plattformen.md"),
