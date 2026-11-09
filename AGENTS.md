@@ -35,6 +35,8 @@ Gilt für neue und für überarbeitete Rohfassungen gleichermaßen.
 4. `src/SUMMARY.md` pflegen: Titel exakt aus der `# `-Hauptüberschrift übernehmen. Neue Kapitel am Ende der Liste einfügen, außer der Benutzer nennt eine andere Stelle. Vorhandene Einträge nicht doppelt anlegen, bei geänderter Überschrift den Titel anpassen. Fehlt die `# `-Überschrift, nachfragen.
 5. Prüfung durchführen (siehe unten) und `mdbook build` ausführen. Falls der Befehl nicht verfügbar ist oder fehlschlägt, dies mitteilen.
 
+Die Schritte 3 bis 5 übernimmt das Skript `skripte/uebernahme_src.py` (nach der Korrektur in Schritt 2 aufrufen). Es erzeugt `src/`, pflegt `src/SUMMARY.md`, führt die Prüfung durch und startet `mdbook build`. Aufruf: `python3 skripte/uebernahme_src.py [Datei.md …]`; mit `--pruefen` wird nur geprüft, ohne zu schreiben.
+
 ### C) Artikel entfernen
 
 Nur auf ausdrücklichen Auftrag: Datei in `src/` und den Eintrag in `src/SUMMARY.md` löschen, danach `mdbook build` ausführen. Die Rohfassung in `RAW/` nur löschen, wenn der Benutzer das ausdrücklich verlangt.
