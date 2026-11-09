@@ -10,7 +10,9 @@ Diese Anleitung enthält die besten, direkt kopierbaren Prompts für dein Projek
 | :--- | :--- | :--- |
 | **`RAW/`** | Deine eigenen Rohfassungen („Single Source of Truth") | **Du** schreibst hier; die KI korrigiert hier nur Rechtschreibung/Grammatik nach [AGENTS.md](AGENTS.md). |
 | **`src/`** | Fertige Buchkapitel (inkl. Transparenzhinweis & `SUMMARY.md`) | Wird ausschließlich über die Aufträge in [AGENTS.md](AGENTS.md) aus `RAW/` erzeugt. |
-| **`Rohmaterial/`** | Eigenes mdBook mit Web-Recherchen, Quellen-URLs, Alternativen & Themenideen | Wird über den Skill `rohmaterial-recherche` ([.agents/skills/rohmaterial-recherche/SKILL.md](.agents/skills/rohmaterial-recherche/SKILL.md)) befüllt. |
+| **`Rohmaterial/`** | Eigenes mdBook mit Web-Recherchen, Quellen-URLs, Alternativen & Themenideen | Wird über den Skill `rohmaterial-recherche` ([.agents/skills/rohmaterial-recherche/SKILL.md](.agents/skills/rohmaterial-recherche/SKILL.md)) befüllt. **Steht wegen Lizenzfragen in `.gitignore` und wird nie committet** (deshalb gelegentlich lokal sichern). |
+| **`Proto/`** | Prototyp-Lehrbuch aus `RAW/` und `Rohmaterial/` (inkl. Schreibtipps) | Wird vom Skill `proto-erstellung` und dem Skript `skripte/build_proto.py` erzeugt, nie von Hand bearbeitet. In `.gitignore`. |
+| **`skripte/`** | Python-Skripte für mechanische Aufgaben (0 Tokens) | Siehe Teil 6. |
 | **`AGENTS.md`** | Feste Regeln für Rechtschreibkorrektur und Buchübernahme (`RAW/` $\rightarrow$ `src/`) | Wird automatisch bei jedem Chat im Hintergrund geladen. |
 
 ---
@@ -18,6 +20,9 @@ Diese Anleitung enthält die besten, direkt kopierbaren Prompts für dein Projek
 ## Teil 1: Web-Recherche ins `Rohmaterial/`-Buch ausführen
 
 Der Skill **`rohmaterial-recherche`** sucht im Web nach Fakten, Quellen mit URL, alternativer Software und weiteren Buchthemen und baut daraus das separate mdBook im Ordner `Rohmaterial/`.
+
+### 1.0 Zuerst prüfen, was überhaupt neu ist (0 Tokens)
+Der Skill ruft automatisch `python3 skripte/geaendert.py` auf. Du kannst es auch selbst im Terminal tun: Es listet nur die Artikel in `RAW/`, die neu oder seit der letzten Recherche geändert sind. Steht dort „Nichts zu tun“, brauchst du keine Recherche zu starten.
 
 ### 1.1 Sparsamster Prompt: Nur einen einzelnen Artikel recherchieren (Empfohlen!)
 Wenn du in `RAW/` einen neuen Artikel angelegt oder erweitert hast, recherchiere **nur diese eine Datei**. Das spart rund 80 % Tokens und geht am schnellsten:
@@ -41,6 +46,11 @@ Nur nötig, wenn du das gesamte `Rohmaterial/`-Buch von Grund auf neu aufbauen m
 @[google.md]
 ```
 *(Oder ausgeschrieben: `Nutze den Skill rohmaterial-recherche für alle Artikel in RAW/ (außer Vorwort.md).`)*
+
+Der Skill bearbeitet dabei nur geänderte Artikel. Willst du ausdrücklich alle neu recherchieren, schreibe das dazu.
+
+### 1.4 Ergebnis prüfen (0 Tokens)
+Am Ende läuft `python3 skripte/rohmaterial_pruefen.py`. Es prüft ohne KI, ob jeder Punkt eine Quelle mit URL hat, alle Links erreichbar sind, das Inhaltsverzeichnis stimmt und `mdbook build` läuft. Du kannst es jederzeit selbst starten (`--offline` überspringt die Linkprüfung, `--kein-build` den Build).
 
 ---
 
@@ -75,6 +85,12 @@ Wenn ein Artikel in `RAW/` fertig ist oder überarbeitet wurde und ins richtige 
 Übernimm RAW/Desktop.md nach Auftrag B in AGENTS.md ins Buch.
 ```
 
+**Ohne KI (0 Tokens):** Ist die Rohfassung bereits korrigiert, übernimmt das Skript die Schritte 3 bis 5 selbst (`src/` erzeugen, `SUMMARY.md` pflegen, Prüfung, `mdbook build`):
+```bash
+python3 skripte/uebernahme_src.py Desktop.md
+python3 skripte/uebernahme_src.py --pruefen   # nur prüfen, nichts schreiben
+```
+
 ### 3.3 Mehrere Artikel auf einmal ins Hauptbuch übernehmen
 ```text
 Übernimm RAW/CLI_Werkzeuge.md und RAW/Webframework.md nach Auftrag B in AGENTS.md ins Buch.
@@ -89,9 +105,9 @@ Entferne src/Desktop.md nach Auftrag C in AGENTS.md aus dem gebauten Buch (Rohfa
 
 ---
 
-## Teil 4: Beide Bücher im Browser ansehen (Terminalbefehle)
+## Teil 4: Die Bücher im Browser ansehen (Terminalbefehle)
 
-Du hast jetzt **zwei getrennte mdBooks** im Projekt, die sich niemals gegenseitig überschreiben:
+Du hast **drei getrennte mdBooks** im Projekt, die sich niemals gegenseitig überschreiben:
 
 ### 1. Hauptbuch ansehen (`src/` $\rightarrow$ `book/`)
 Im Hauptordner `/home/thorsten/ProgrammierSprachenKurs` im Terminal ausführen:
@@ -105,7 +121,15 @@ Im Terminal ausführen:
 ```bash
 mdbook serve Rohmaterial --open -p 3001
 ```
-*(Startet das Rohmaterial-Buch auf Port `3001` unter `http://localhost:3001`, sodass du beide Bücher gleichzeitig nebeneinander im Browser geöffnet haben kannst!)*
+*(Startet das Rohmaterial-Buch auf Port `3001` unter `http://localhost:3001`, sodass du die Bücher gleichzeitig nebeneinander im Browser geöffnet haben kannst!)*
+
+### 3. Proto-Buch ansehen (`Proto/src/` $\rightarrow$ `Proto/book/`)
+Neu bauen und ansehen:
+```bash
+python3 skripte/build_proto.py && mdbook build Proto
+mdbook serve Proto --open -p 3002
+```
+*(Das Skript baut `Proto/src/` aus `RAW/` und `Rohmaterial/src/`. Jedes Kapitel enthält den Abschnitt „Tipps zum Weiterschreiben“. Per KI: `Nutze den Skill proto-erstellung und baue das Proto-Buch neu.`)*
 
 ---
 
@@ -134,18 +158,20 @@ Jedes Mal, wenn du im KI-Chat schreibst *„Bitte führe mdbook build aus"*, ver
 * **Kostenlose Alternative 2 – Integriertes VS-Code-Terminal (`Strg+Ö` oder `` Strg+` ``):**
   Starte einmalig unten im VS-Code-Terminal `mdbook serve --open`. Solange dieses Terminal offen bleibt, baut `mdbook` dein Buch bei jedem Speichern (`Strg+S`) automatisch im Hintergrund neu – für **0 Tokens**.
 
-### 4. Die Ordner `book/` und `Rohmaterial/book/` in VS Code von der Suche ausschließen
+### 4. Die Ordner `book/`, `Rohmaterial/book/` und `Proto/book/` in VS Code von der Suche ausschließen
 Wenn `mdbook build` läuft, entstehen in `book/` und `Rohmaterial/book/` große Dateien wie `searchindex.js` (**über 800 KB!**) und `highlight.js`. Wenn VS Code oder ein KI-Agent das Projekt durchsucht, fressen diese generierten Dateien enorm viele Tokens.
 * Lege im Projekt (falls gewünscht) die Datei `.vscode/settings.json` mit folgendem Inhalt an, damit VS Code und KI-Suchen die gebauten HTML-Ordner ignorieren:
   ```json
   {
     "search.exclude": {
       "**/book/**": true,
-      "**/Rohmaterial/book/**": true
+      "**/Rohmaterial/book/**": true,
+      "**/Proto/book/**": true
     },
     "files.watcherExclude": {
       "**/book/**": true,
-      "**/Rohmaterial/book/**": true
+      "**/Rohmaterial/book/**": true,
+      "**/Proto/book/**": true
     }
   }
   ```
@@ -157,7 +183,24 @@ Das ist die **wichtigste Sparregel überhaupt**:
 
 ---
 
-## Zusammenfassung: 5 goldene Regeln für problemloses Arbeiten & minimalen Tokenverbrauch
+## Teil 6: Skripte statt KI-Aufrufe (0 Tokens)
+
+Alles Mechanische erledigen Skripte im Ordner `skripte/`. Sie brauchen nur Python 3 und werden im Projektordner im Terminal gestartet:
+
+| Aufgabe | Befehl |
+| :--- | :--- |
+| Welche Artikel sind neu oder geändert? | `python3 skripte/geaendert.py` |
+| Stand nach der Recherche merken | `python3 skripte/geaendert.py --merken Desktop.md` |
+| Rohmaterial prüfen (Quellen, Links, Inhaltsverzeichnis, Build) | `python3 skripte/rohmaterial_pruefen.py` |
+| `RAW/` nach `src/` übernehmen (Auftrag B ab der Prüfung) | `python3 skripte/uebernahme_src.py [Datei.md]` |
+| Nur prüfen, ob `src/` zu `RAW/` passt | `python3 skripte/uebernahme_src.py --pruefen` |
+| Proto-Buch neu erzeugen | `python3 skripte/build_proto.py && mdbook build Proto` |
+
+Nur die **Rechtschreibkorrektur** in `RAW/` (Auftrag A und Schritt 2 von Auftrag B) und die **Web-Recherche** brauchen die KI.
+
+---
+
+## Zusammenfassung: 6 goldene Regeln für problemloses Arbeiten & minimalen Tokenverbrauch
 
 1. **Immer den genauen Dateinamen nennen (`@RAW/CLI_Werkzeuge.md`):** Schreibe nie pauschal „korrigiere meine Dateien", sondern nenne immer genau die eine Datei oder markiere den Absatz in VS Code.
 2. **Neuer Chat (`+`) nach jeder abgeschlossenen Aufgabe:** Verhindert, dass alte Kapitel und Suchergebnisse bei jeder weiteren Nachricht immer wieder mitberechnet werden.
@@ -165,4 +208,5 @@ Das ist die **wichtigste Sparregel überhaupt**:
    * **Web-Recherche (`rohmaterial-recherche`) & schnelle Absatz-Korrekturen:** Schnelles, sparsames Modell (z. B. *Gemini Flash*, *Gemini Argon (Medium)*, *Claude Haiku/Sonnet*).
    * **Komplexe Buchgliederung & tiefes Lektorat:** Großes Modell (z. B. *Claude Opus* oder *Gemini Pro/Argon*).
 4. **Keine Sorge vor großen Ordnern auf der Festplatte:** Dateien in `RAW/`, `src/` und `Rohmaterial/` verbrauchen im Ruhezustand **0 Tokens**, solange sie nicht im Editor als aktiver Kontext offen sind oder im Prompt erwähnt werden.
-5. **Skill gezielt pro Datei aufrufen:** Nutze `Nutze den Skill rohmaterial-recherche nur für RAW/<Datei>.md`, statt jedes Mal alle Kapitel neu durchsuchen zu lassen.
+5. **Skill gezielt pro Datei aufrufen:** Nutze `Nutze den Skill rohmaterial-recherche nur für RAW/<Datei>.md`, statt jedes Mal alle Kapitel neu durchsuchen zu lassen. `skripte/geaendert.py` zeigt dir, welche Dateien überhaupt dran sind.
+6. **Mechanisches den Skripten überlassen (Teil 6):** Übernahme nach `src/`, Prüfung des Rohmaterials und das Proto-Buch kosten per Skript 0 Tokens.
