@@ -27,6 +27,7 @@ KAPITEL = [
     ("Sprachmodel.md", "Sprachmodelle"),
     ("KI_AGENT.md", "KI-Coding-Agents"),
     ("Fertige_Plattformen.md", "Fertige Plattformen"),
+    ("Werkzeuge.md", "Werkzeugübersicht"),
 ]
 # Bei diesen Kapiteln wandert Abschnitt 1 (allgemeine Grundprinzipien) in ein eigenes Kapitel
 GRUNDPRINZIP_AUS = {"CLI_Werkzeuge.md", "Desktop.md", "Webframework.md"}
@@ -194,7 +195,8 @@ def eintrag(name):
 lines += [eintrag("Dokument_erstellen_software.md"), "", "# Programmieren für 20 Jahre", "",
           eintrag("CLI_Werkzeuge.md"), eintrag("Desktop.md"), eintrag("Webframework.md"), "",
           "# Arbeiten mit Sprachmodellen", "", eintrag("Sprachmodel.md"), eintrag("KI_AGENT.md"), "",
-          "# Lernplattformen und Code-Ausführung", "", eintrag("Fertige_Plattformen.md"), "",
+          "# Lernplattformen und Code-Ausführung", "", eintrag("Fertige_Plattformen.md"),
+          eintrag("Werkzeuge.md"), "",
           "# Anhang", "", "- [Ausblick: Weitere mögliche Themen](Ausblick.md)",
           "- [Quellenverzeichnis](Quellen.md)", ""]
 (OUT / "SUMMARY.md").write_text("\n".join(lines), encoding="utf-8")
