@@ -1,0 +1,1 @@
+Suche im Web zu den Themen der einzelnen Artikel im Ordner /RAW. Extrahiere alles, was du findest, und speichere die Inhalte im Ordner Rohmaterial in Markdown.
