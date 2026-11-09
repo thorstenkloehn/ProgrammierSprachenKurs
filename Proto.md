@@ -1,0 +1,1 @@
+Ordner /RAW und /Rohmaterial/src lesen und analysieren, alles extrahieren und ordnen. Proto als mdBook erstellen: einen umfassenden Prototyp als mdBook mit einem umfassend geschriebenen Lehrbuch und Tipps, wie man die Prototyp-Artikel noch schreiben soll.
