@@ -28,7 +28,7 @@ Dieser Skill beschreibt den mehrstufigen Ablauf, um zu den Rohfassungen in `RAW/
 ## Ablauf Schritt für Schritt
 
 ### Schritt 1: Themen aus `RAW/` erfassen
-1. Liste alle Markdown-Dateien im Ordner `RAW/` auf (ohne `Vorwort.md`). Falls der Benutzer nur bestimmte Artikel benennt, bearbeite nur diese.
+1. **Token sparen:** Führe zuerst `python3 skripte/geaendert.py` aus. Es listet nur neue oder geänderte Artikel aus `RAW/` (ohne `Vorwort.md`). Bearbeite nur diese; sind keine aufgeführt, ist nichts zu tun. Nennt der Benutzer bestimmte Artikel, bearbeite nur diese (ein ausdrücklich verlangter Gesamtlauf ignoriert die Liste).
 2. Lies den aktuellen Inhalt der betreffenden Dateien in `RAW/`, um alle genannten Sprachen, Frameworks, Werkzeuge und Fragestellungen zu erfassen.
 
 ### Schritt 2: Web-Recherche durchführen
@@ -73,10 +73,15 @@ Gliederung:
 Widerspricht die Recherche einer Aussage in `RAW/<Datei>.md` (veraltete Version, falsche Eigenschaft, eingestellte Software), vermerke das im Rohmaterial in einem Hinweis `> **Hinweis zur Rohfassung:** …` mit Quelle und URL und nenne es im Bericht. `RAW/` bleibt unverändert; der Autor entscheidet.
 
 ### Schritt 6: Abschlussprüfung
-- Jeder inhaltliche Punkt in `Rohmaterial/src/*.md` hat direkt eine Quelle mit vollständiger URL.
-- Jede Quelle wurde tatsächlich abgerufen und ist erreichbar.
-- Alle recherchierten Artikel stehen in `Rohmaterial/src/SUMMARY.md`, ohne Doppelungen und ohne `Vorwort.md`.
-- `git status` zeigt keine Änderungen an `RAW/`, `src/` und der Haupt-`book.toml`.
+Die mechanischen Prüfungen übernimmt das Skript, nicht die KI (spart Token):
+```bash
+python3 skripte/rohmaterial_pruefen.py
+```
+Es prüft: Jeder inhaltliche Punkt hat eine Quelle mit URL, alle URLs sind erreichbar, alle Artikel stehen genau einmal in `Rohmaterial/src/SUMMARY.md` (ohne `Vorwort.md`), `git status` zeigt keine Änderungen an `RAW/`, `src/` und `book.toml`, und `mdbook build` läuft fehlerfrei. Gemeldete Fehler beheben (kaputte Links durch eine gelesene Quelle ersetzen) und das Skript erneut ausführen. Danach den Stand der bearbeiteten Artikel merken:
+```bash
+python3 skripte/geaendert.py --merken Artikel1.md Artikel2.md
+```
+Nicht prüfbare Links (HINWEIS, z. B. HTTP 403) im Bericht erwähnen.
 
 ### Schritt 7: Bericht an den Benutzer
 Kurze Antwort auf Deutsch: welche Artikel neu oder aktualisiert wurden, welche Themen offen blieben, Ergebnis von `mdbook build`, vermutete Fehler in `RAW/` (Schritt 5).
