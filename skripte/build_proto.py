@@ -11,6 +11,7 @@ ROOT = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().pare
 RAW = ROOT / "RAW"
 ROH = ROOT / "Rohmaterial" / "src"
 OUT = ROOT / "Proto" / "src"
+LEHR = ROOT / "Proto" / "lehrtext"  # von der KI aus dem Rohmaterial abgeleitete Lehrbuch-Elemente
 OUT.mkdir(parents=True, exist_ok=True)
 
 HINWEIS = ("*Prototyp: Dieses Kapitel wurde mit Unterstützung von Künstlicher Intelligenz aus den "
@@ -126,6 +127,66 @@ def schreibtipps(name, raw_body, sections):
     return "\n\n".join(z).replace("\n\n\n\n", "\n\n").replace("\n\n* ", "\n* ")
 
 
+LEHR_HINWEIS = ("*KI-Lehrtext: Dieser Abschnitt wurde von einer KI aus dem Rohmaterial abgeleitet. "
+                "Er stammt nicht vom Autor und ist ein Vorschlag.*")
+LEHR_VORN = ["Lernziele"]  # direkt nach dem Autorentext
+LEHR_HINTEN = ["Vergleich auf einen Blick", "Zusammenfassung", "Kontrollfragen"]  # vor den Schreibtipps
+URL_RE = r"https?://[^\s)*,]+"
+
+
+def urls_in(text):
+    return {u.rstrip(".") for u in re.findall(URL_RE, text)}
+
+
+def lehrtext(name):
+    """Liest Proto/lehrtext/<name> als {Überschrift: Inhalt}. Jede URL muss im Rohmaterial stehen."""
+    pfad = LEHR / name
+    if not pfad.exists():
+        return {}
+    text = pfad.read_text(encoding="utf-8")
+    fremd = urls_in(text) - urls_in((ROH / name).read_text(encoding="utf-8"))
+    if fremd:
+        sys.exit(f"Lehrtext {name}: Quellen nicht im Rohmaterial: {sorted(fremd)}")
+    out = {}
+    for p in re.split(r"^## ", text, flags=re.M)[1:]:
+        head, _, body = p.partition("\n")
+        out[head.strip()] = body.strip("\n")
+    unbekannt = set(out) - set(LEHR_VORN + LEHR_HINTEN)
+    if unbekannt:
+        sys.exit(f"Lehrtext {name}: unbekannte Abschnitte: {sorted(unbekannt)}")
+    return out
+
+
+def werkzeugtabelle(sections):
+    """Baut aus den Aufzählungen der Analyse (Werkzeuge.md) je Kategorie eine Übersichtstabelle."""
+    out = []
+    for head, body in sections:
+        if not head.startswith("Detaillierte Analyse"):
+            continue
+        zeilen, eintrag = [], None
+        for line in body.splitlines() + ["### "]:
+            m = re.match(r"\* \*\*(.+?)(?: \((.*)\))?:\*\*", line)
+            if line.startswith("### ") or m:
+                if eintrag:
+                    zeilen.append(eintrag)
+                eintrag = None
+            if line.startswith("### "):
+                if zeilen:
+                    out += ["| Werkzeug | Einordnung laut Recherche | Quelle |", "|---|---|---|"]
+                    out += [f"| {n} | {e or '–'} | {'<' + q + '>' if q else '–'} |" for n, e, q in zeilen]
+                    out.append("")
+                zeilen = []
+                if line[4:].strip():
+                    out += [f"**{line[4:].strip()}**", ""]
+            elif m:
+                eintrag = [m.group(1).replace("|", "\\|"), (m.group(2) or "").replace("|", "\\|"), ""]
+            if eintrag and not eintrag[2]:
+                u = re.search(URL_RE, line)
+                if u:
+                    eintrag[2] = u.group(0).rstrip(".")
+    return "\n".join(out).strip("\n")
+
+
 def shift(body):
     """Überschriften eine Ebene tiefer setzen (### -> ####)."""
     return re.sub(r"^(#+) ", lambda m: "#" + m.group(1) + " ", body, flags=re.M)
@@ -142,6 +203,12 @@ for name, kurz in KAPITEL:
     title, raw_body = raw_parts(name)
     sections = roh_sections(name)
     teile = ["## Kernaussagen des Autors", raw_body]
+    lehr = lehrtext(name)
+    if name == "Werkzeuge.md" and lehr:
+        lehr.setdefault("Vergleich auf einen Blick", werkzeugtabelle(sections))
+    for h in LEHR_VORN:
+        if lehr.get(h):
+            teile += [f"## {h}", LEHR_HINWEIS, lehr[h]]
     for i, (head, body) in enumerate(sections):
         if head.startswith("Weitere mögliche Themen"):
             ausblick.append((title, name, body))
@@ -154,6 +221,9 @@ for name, kurz in KAPITEL:
         if head.startswith("Alternative"):
             head = "Alternativen und ähnliche Software"
         teile += [f"## {head}", body]
+    for h in LEHR_HINTEN:
+        if lehr.get(h):
+            teile += [f"## {h}", LEHR_HINWEIS, lehr[h]]
     teile += ["## Tipps zum Weiterschreiben", schreibtipps(name, raw_body, sections)]
     datei(name, title, "\n\n".join(teile))
     summary_kapitel.append((title, name))

@@ -36,6 +36,8 @@ Jedes Themenkapitel enthält am Ende den Abschnitt „Tipps zum Weiterschreiben�
 ### Schritt 3: Lehrbuch-Inhalt und Schreibtipps ergänzen
 Das Skript erzeugt den Abschnitt „Tipps zum Weiterschreiben“ automatisch (Funktion `schreibtipps()`, Konstante `TECHNOLOGIE_KAPITEL`, Tabelle `ALIASE`). Bei neuen Artikeln prüfen, ob sie in `TECHNOLOGIE_KAPITEL` gehören und ob Schreibvarianten in `ALIASE` fehlen. Die Tipps nie in `RAW/` schreiben.
 
+Lehrbuch-Elemente (Lernziele, Vergleich auf einen Blick, Zusammenfassung, Kontrollfragen) liegen je Kapitel in `Proto/lehrtext/<Datei>.md` und werden von `lehrtext()` eingebunden, jeweils mit dem Hinweis `LEHR_HINWEIS`. Das ist die einzige von Hand (KI) gepflegte Stelle in `Proto/`; sie ist wie `Rohmaterial/` nicht in Git, weil sie aus der Recherche abgeleitet ist. Regeln: nur Aussagen aus dem Rohmaterial des Kapitels, jede mit URL; das Skript bricht ab, wenn eine URL nicht im Rohmaterial steht. Bei `Werkzeuge.md` erzeugt `werkzeugtabelle()` den Vergleich automatisch. Fehlt die Datei zu einem Kapitel, entfallen die Abschnitte.
+
 ### Schritt 4: Prüfung
 - `mdbook build` läuft fehlerfrei, `Proto/book/index.html` existiert. Ist `mdbook` nicht verfügbar oder schlägt fehl, dies mitteilen.
 - Jeder Text aus `RAW/` kommt unverändert im Kapitel vor (Stichprobe per `diff`/`grep`).
