@@ -6,3 +6,4 @@
 [CLI-Werkzeuge](CLI_Werkzeuge.md)
 [Webframeworks programmieren, die noch in 20 Jahren laufen](Webframework.md)
 [Sprachmodell](Sprachmodel.md)
+[KI-Code-Agent](KI_AGENT.md)

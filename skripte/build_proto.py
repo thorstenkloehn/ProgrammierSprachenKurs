@@ -25,6 +25,8 @@ KAPITEL = [
     ("Desktop.md", "Desktop-Anwendungen"),
     ("Webframework.md", "Webframeworks"),
     ("Sprachmodel.md", "Sprachmodelle"),
+    ("KI_AGENT.md", "KI-Coding-Agents"),
+    ("Fertige_Plattformen.md", "Fertige Plattformen"),
 ]
 # Bei diesen Kapiteln wandert Abschnitt 1 (allgemeine Grundprinzipien) in ein eigenes Kapitel
 GRUNDPRINZIP_AUS = {"CLI_Werkzeuge.md", "Desktop.md", "Webframework.md"}
@@ -58,10 +60,11 @@ TIPP_HINWEIS = ("*KI-Vorschlag: Die folgenden Tipps wurden automatisch aus dem V
                 "und Recherche abgeleitet. Sie sind Anregungen, keine Vorgaben; der Autor entscheidet.*")
 # Kapitel, in denen die ###-Überschriften der Analyse einzelne Technologien sind (Abgleich per Name).
 # Bei den übrigen Kapiteln (Sprachmodelle) sind es Themenblöcke, die nur aufgelistet werden.
-TECHNOLOGIE_KAPITEL = {"Dokument_erstellen_software.md", "CLI_Werkzeuge.md", "Desktop.md", "Webframework.md"}
+TECHNOLOGIE_KAPITEL = {"Dokument_erstellen_software.md", "CLI_Werkzeuge.md", "Desktop.md", "Webframework.md",
+                       "KI_AGENT.md", "Fertige_Plattformen.md"}
 
 
-ALIASE = {"Go": ["Golang"]}  # andere Schreibweisen desselben Begriffs
+ALIASE = {"Go": ["Golang"], "bubblewrap": ["bwrap"]}  # andere Schreibweisen desselben Begriffs
 
 
 def namen(ueberschrift):
@@ -81,8 +84,11 @@ def schreibtipps(name, raw_body, sections):
     woerter_raw = len(raw_body.split())
     woerter_roh = sum(len(b.split()) for _, b in sections)
     raw_ueberschriften = re.findall(r"^#+ (.+)$", raw_body, flags=re.M)
-    analyse = [b for h, b in sections if h.startswith(("Analyse", "Best Practices"))]
+    analyse = [b for h, b in sections if h.startswith(("Analyse", "Detaillierte Analyse", "Best Practices"))]
     themen = [h for b in analyse for h in re.findall(r"^#{3,4} (.+)$", b, flags=re.M)]
+    if name == "Fertige_Plattformen.md":
+        # Die Technologien stehen hier unter den Kategorien eine Ebene tiefer.
+        themen = [h for b in analyse for h in re.findall(r"^#### (.+)$", b, flags=re.M)]
 
     z = [TIPP_HINWEIS, "",
          f"**Stand:** Die Rohfassung hat {woerter_raw} Wörter, das Rohmaterial dazu {woerter_roh}. "
@@ -187,7 +193,8 @@ def eintrag(name):
     return f"- [{t}]({name})"
 lines += [eintrag("Dokument_erstellen_software.md"), "", "# Programmieren für 20 Jahre", "",
           eintrag("CLI_Werkzeuge.md"), eintrag("Desktop.md"), eintrag("Webframework.md"), "",
-          "# Arbeiten mit Sprachmodellen", "", eintrag("Sprachmodel.md"), "",
+          "# Arbeiten mit Sprachmodellen", "", eintrag("Sprachmodel.md"), eintrag("KI_AGENT.md"), "",
+          "# Lernplattformen und Code-Ausführung", "", eintrag("Fertige_Plattformen.md"), "",
           "# Anhang", "", "- [Ausblick: Weitere mögliche Themen](Ausblick.md)",
           "- [Quellenverzeichnis](Quellen.md)", ""]
 (OUT / "SUMMARY.md").write_text("\n".join(lines), encoding="utf-8")

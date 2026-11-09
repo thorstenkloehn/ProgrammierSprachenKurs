@@ -11,13 +11,20 @@ Ein Buch über das Erlernen von Programmiersprachen, erstellt mit [mdBook](https
 | `src/SUMMARY.md` | Inhaltsverzeichnis – legt fest, welche Kapitel in welcher Reihenfolge erscheinen   |
 | `RAW/`       | Dauerhaft aufbewahrte Rohfassungen, an denen der Autor weiterarbeitet                   |
 | `book/`      | Build-Ausgabe von `mdbook build` (nicht versioniert, nicht von Hand bearbeiten)        |
+| `Rohmaterial/` | Eigenes mdBook mit Web-Recherche, Quellen und Themenideen (steht wegen Lizenzfragen in `.gitignore`, wird nie committet) |
+| `Proto/`     | Prototyp-Lehrbuch aus `RAW/` und `Rohmaterial/`, erzeugt von `skripte/build_proto.py` (in `.gitignore`) |
+| `skripte/`   | Python-Skripte für mechanische Aufgaben: `uebernahme_src.py`, `geaendert.py`, `rohmaterial_pruefen.py`, `build_proto.py` |
+| `.agents/skills/`, `.claude/skills/` | Skills `rohmaterial-recherche` und `proto-erstellung`                 |
+| `Anleitung.md` | Prompts und Arbeitsabläufe für Recherche, Proto-Buch, Übernahme und Skripte           |
 | `AGENTS.md`  | Anweisungen für KI-Assistenten, die am Projekt mitarbeiten                             |
 
 ## Arbeitsablauf: vom Rohtext zum Kapitel
 
 Jeder Artikel entsteht zuerst als Rohfassung in `RAW/`, z. B. `RAW/Vorwort.md`. Mit Unterstützung von KI werden Rechtschreibung, Grammatik und Zeichensetzung korrigiert; Stil, Inhalt und Ton bleiben unverändert. Die korrigierte Fassung landet unter demselben Dateinamen in `src/`, ergänzt um einen Transparenzhinweis gemäß Art. 50 EU AI Act, und wird in `src/SUMMARY.md` eingetragen.
 
-Die verbindlichen Regeln für diesen Ablauf stehen ausschließlich in [AGENTS.md](AGENTS.md).
+Die verbindlichen Regeln für diesen Ablauf stehen ausschließlich in [AGENTS.md](AGENTS.md). Nach der Korrektur übernimmt das Skript `skripte/uebernahme_src.py` die mechanischen Schritte: `src/` erzeugen, `src/SUMMARY.md` pflegen, Prüfung durchführen und `mdbook build` starten.
+
+Weitere Prompts und Arbeitsabläufe (Rohmaterial-Recherche, Proto-Buch, Skripte, Tipps zum Tokensparen) stehen in der [Anleitung](Anleitung.md).
 
 ## Prompts für die Arbeit am Buch
 
